@@ -20,13 +20,20 @@ public class MusicPlayer extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("MusicPlayerFXML.fxml"));
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MusicPlayerFXML.fxml"));
+        Parent root = (Parent) loader.load();
+
+        MusicPlayerFXMLController controller = (MusicPlayerFXMLController) loader.getController();
+        controller.setStage(stage);
+
         Scene scene = new Scene(root);
         stage.setTitle("MusicPlayer");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
