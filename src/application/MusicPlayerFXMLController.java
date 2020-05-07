@@ -9,13 +9,17 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.MapChangeListener;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -40,18 +44,29 @@ public class MusicPlayerFXMLController implements Initializable {
     @FXML
     private Slider volumeSlider;
     @FXML
+    private Label volumeLabel;
+    @FXML
+    private Button playButton;
+    @FXML
     private Label timeLabel;
-
+    @FXML
+    private ImageView albumImageView;
+    
     private Stage stage;
-    private String songDirectory;
-    private String songName;
     private File currentSong;
     private MediaPlayer player;
+    private Media song;
+    private String title;
+    private String artist;
+    private String album;
+
 
     private Duration songDuration;
     private boolean loop;
     private boolean shuffle;
     private boolean isPlaying;
+
+    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -60,9 +75,21 @@ public class MusicPlayerFXMLController implements Initializable {
         isPlaying = false;
 
         volumeSlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+           
+            double volumeSliderValue = volumeSlider.getValue();
+
+            if (volumeSliderValue == 0.0) {
+                volumeLabel.setText("🔈");
+            } else if (volumeSliderValue > 0.0 && volumeSliderValue <= 0.5) {
+                volumeLabel.setText("🔉");
+            } else {
+                volumeLabel.setText("🔊");
+            }
+
+            
             updatePlayer();
         });
-
+        
     }
 
     public void setStage(Stage newStage) {
@@ -74,14 +101,28 @@ public class MusicPlayerFXMLController implements Initializable {
         songSlider.setValue(0);
 
         if (currentSong == null) {
-            songDirectory = "";
-            songName = "";
-            songNameLabel.setText("");
+            songNameLabel.setText("...");
             songSlider.setMax(0);
             timeLabel.setText("--:--/--:--");
+            playButton.setText("▶");
+        } else {
+            songNameLabel.setText(currentSong.getName());
+            song.getMetadata().addListener((MapChangeListener<String, Object>) c -> {
+                if (c.wasAdded()) {
+                    if ("artist".equals(c.getKey())) {
+                        artist = c.getValueAdded().toString();
+                    } else if ("title".equals(c.getKey())) {
+                        title = c.getValueAdded().toString();
+                    } else if ("album".equals(c.getKey())) {
+                        album = c.getValueAdded().toString();
+                    } else if ("image".equals(c.getKey())) {
+                        albumImageView.setImage((Image)c.getValueAdded());
+                        System.out.println("found");
+                    }
+                    songNameLabel.setText(String.format("[%s] %s - %s", album, artist, title));
+                }
+            });
         }
-
-        System.out.println(songDirectory);
     }
 
     private void updatePlayer() {
@@ -110,9 +151,15 @@ public class MusicPlayerFXMLController implements Initializable {
     
     private String formatTime(Duration currentTime) {
 
-        double durationSeconds = songDuration.toSeconds();
+        int durationSeconds = Math.round((float)songDuration.toSeconds());
+        String durationMinuteString = String.format("%02d", durationSeconds / 60);
+        String durationSecondString = String.format("%02d", durationSeconds % 60);
         
-        return "--:--/--:--";
+        int currentSeconds = Math.round((float)currentTime.toSeconds());
+        String currentMinuteString = String.format("%02d", currentSeconds / 60);
+        String currentSecondString = String.format("%02d", currentSeconds % 60);
+        
+        return currentMinuteString+":"+currentSecondString+"/"+durationMinuteString+":"+durationSecondString;
     }
     
     private void updateDuration() {
@@ -145,9 +192,8 @@ public class MusicPlayerFXMLController implements Initializable {
             player.stop();
         }
 
-        Media media;
-        media = new Media(currentSong.toURI().toString());
-        player = new MediaPlayer(media);
+        song = new Media(currentSong.toURI().toString());
+        player = new MediaPlayer(song);
         
         player.currentTimeProperty().addListener(new InvalidationListener() 
         {
@@ -166,6 +212,8 @@ public class MusicPlayerFXMLController implements Initializable {
         songSlider.setMax(1);
         
         player.play();
+        playButton.setText("⏸");
+        isPlaying = true;
     }
 
     @FXML
@@ -177,9 +225,11 @@ public class MusicPlayerFXMLController implements Initializable {
 
         if (isPlaying) {
             // Pause
+            playButton.setText("►");
             player.pause();
         } else {
             // Play
+            playButton.setText("⏸");
             playSong(player.getCurrentTime().equals(Duration.ZERO));
         }
 
@@ -193,6 +243,7 @@ public class MusicPlayerFXMLController implements Initializable {
             player.stop();
             player.seek(Duration.ZERO);
             isPlaying = false;
+            playButton.setText("▶");
             updateDuration();
         }
     }
@@ -218,8 +269,7 @@ public class MusicPlayerFXMLController implements Initializable {
         fileChooser.setTitle("Select Song");
 
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("MP3 Files (*.mp3)", "*.mp3"),
-                new FileChooser.ExtensionFilter("WAV Files (*.wav)", "*.wav")
+                new FileChooser.ExtensionFilter("Audio File (*.mp3, *.wav)", "*.mp3", "*.wav")
         );
 
         File selectedFile = fileChooser.showOpenDialog(stage);
@@ -240,5 +290,10 @@ public class MusicPlayerFXMLController implements Initializable {
     @FXML
     private void toggleShuffle(ActionEvent event) {
         shuffle = shuffleToggle.isSelected();
+    }
+
+    @FXML
+    private void exitApplication(ActionEvent event) {
+        Platform.exit();
     }
 }

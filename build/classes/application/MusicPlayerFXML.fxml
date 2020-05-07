@@ -5,60 +5,105 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.effect.Glow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="182.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="286.0" prefWidth="898.0" style="-fx-background-color: rgb(10,10,10);" styleClass="imageView" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
     <children>
-        <Button accessibleText="Play/Pause" layoutX="100.0" layoutY="139.0" mnemonicParsing="false" onAction="#toggleSong" prefHeight="25.0" prefWidth="72.0" text="▶/⏸">
+        <Button fx:id="playButton" accessibleText="Play/Pause" layoutX="315.0" layoutY="229.0" mnemonicParsing="false" onAction="#toggleSong" prefHeight="25.0" prefWidth="72.0" text="►">
             <font>
                 <Font name="Consolas" size="14.0" />
             </font>
         </Button>
-        <Button accessibleText="Next Song" layoutX="258.0" layoutY="140.0" mnemonicParsing="false" onAction="#nextSong" prefHeight="25.0" prefWidth="72.0" text="⏭">
+        <Button accessibleText="Next Song" layoutX="393.0" layoutY="229.0" mnemonicParsing="false" onAction="#nextSong" prefHeight="25.0" prefWidth="72.0" text="⏭">
             <font>
                 <Font name="Consolas" size="14.0" />
             </font>
         </Button>
-        <Button accessibleText="Previous Song" layoutX="21.0" layoutY="139.0" mnemonicParsing="false" onAction="#previousSong" prefHeight="25.0" prefWidth="72.0" text="⏮">
+        <Button accessibleText="Previous Song" layoutX="236.0" layoutY="229.0" mnemonicParsing="false" onAction="#previousSong" prefHeight="25.0" prefWidth="72.0" text="⏮">
             <font>
                 <Font name="Consolas" size="14.0" />
             </font>
         </Button>
-        <Slider fx:id="songSlider" layoutX="21.0" layoutY="55.0" max="1.0" prefHeight="27.0" prefWidth="633.0">
+        <Slider fx:id="songSlider" layoutX="236.0" layoutY="65.0" max="1.0" prefHeight="107.0" prefWidth="619.0">
             <cursor>
                 <Cursor fx:constant="OPEN_HAND" />
             </cursor>
-            <effect>
-                <Glow />
-            </effect>
+         <effect>
+            <Lighting bumpInput="$null" diffuseConstant="1.19" specularConstant="0.47" specularExponent="0.0" surfaceScale="0.0">
+               <light>
+                  <Light.Distant azimuth="0.0" color="#ff6763" elevation="92.09" />
+               </light>
+            </Lighting>
+         </effect>
         </Slider>
-        <Label fx:id="songNameLabel" layoutX="22.0" layoutY="11.0" prefHeight="44.0" prefWidth="457.0" text="Artist - Song Name" textFill="#515151">
+        <Label fx:id="songNameLabel" layoutX="236.0" layoutY="43.0" prefHeight="44.0" prefWidth="536.0" style="-fx-text-fill: rgb(255,255,255);" text="[Album] Artist - Song Name" textFill="#515151" wrapText="true">
             <font>
-                <Font name="Monospaced Bold" size="18.0" />
+                <Font name="Consolas Bold" size="18.0" />
             </font>
         </Label>
-        <Button layoutX="564.0" layoutY="21.0" mnemonicParsing="false" onAction="#selectSong" prefHeight="25.0" prefWidth="82.0" text="Select Song" />
-        <CheckBox fx:id="loopToggle" layoutX="568.0" layoutY="135.0" mnemonicParsing="false" onAction="#toggleLoop" text="🔁" />
-        <CheckBox fx:id="shuffleToggle" layoutX="609.0" layoutY="135.0" mnemonicParsing="false" onAction="#toggleShuffle" text="🔀" />
-        <Slider fx:id="volumeSlider" blockIncrement="1.0" layoutX="21.0" layoutY="102.0" max="1.0" value="1.0" />
-        <Label layoutX="169.0" layoutY="101.0" prefHeight="17.0" prefWidth="56.0" text="Volume">
+        <CheckBox fx:id="loopToggle" layoutX="758.0" layoutY="233.0" mnemonicParsing="false" onAction="#toggleLoop" style="-fx-text-fill: rgb(255,255,255);" text="🔁">
+         <font>
+            <Font size="14.0" />
+         </font></CheckBox>
+        <CheckBox fx:id="shuffleToggle" layoutX="816.0" layoutY="233.0" mnemonicParsing="false" onAction="#toggleShuffle" style="-fx-text-fill: rgb(255,255,255);" text="🔀">
+         <font>
+            <Font size="14.0" />
+         </font></CheckBox>
+        <Slider fx:id="volumeSlider" blockIncrement="1.0" layoutX="278.0" layoutY="165.0" max="1.0" value="1.0">
+         <cursor>
+            <Cursor fx:constant="OPEN_HAND" />
+         </cursor></Slider>
+        <Label fx:id="volumeLabel" layoutX="243.0" layoutY="158.0" prefHeight="28.0" prefWidth="39.0" style="-fx-text-fill: rgb(255,255,255);" text="🔊">
             <font>
-                <Font name="Monospaced Bold" size="14.0" />
+                <Font name="Monospaced Bold" size="24.0" />
             </font>
         </Label>
-      <Label fx:id="timeLabel" alignment="CENTER_RIGHT" layoutX="536.0" layoutY="82.0" prefHeight="27.0" prefWidth="110.0" text="--:--/--:--" textAlignment="RIGHT">
+      <Label fx:id="timeLabel" alignment="CENTER_RIGHT" layoutX="699.0" layoutY="138.0" prefHeight="27.0" prefWidth="150.0" style="-fx-text-fill: rgb(255,255,255);" text="--:--/--:--" textAlignment="RIGHT">
          <font>
             <Font name="Monospaced Bold" size="14.0" />
          </font>
+         <effect>
+            <Glow />
+         </effect>
       </Label>
-      <Button accessibleText="Play/Pause" layoutX="179.0" layoutY="139.0" mnemonicParsing="false" onAction="#stopSong" prefHeight="25.0" prefWidth="72.0" text="⏹">
+      <Button accessibleText="Play/Pause" layoutX="481.0" layoutY="229.0" mnemonicParsing="false" onAction="#stopSong" prefHeight="25.0" prefWidth="72.0" text="⏹">
          <font>
             <Font name="Consolas" size="14.0" />
          </font>
       </Button>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1717174a" height="200.0" layoutX="20.0" layoutY="58.0" stroke="#ffffff0e" strokeType="INSIDE" strokeWidth="4.0" width="200.0">
+         <effect>
+            <Bloom threshold="0.0" />
+         </effect>
+      </Rectangle>
+      <ImageView fx:id="albumImageView" fitHeight="192.0" fitWidth="194.0" layoutX="23.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true" />
+      <MenuButton layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="File" textFill="WHITE">
+        <items>
+          <MenuItem mnemonicParsing="false" onAction="#selectSong" text="Open" />
+          <MenuItem mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
+        </items>
+         <font>
+            <Font name="Consolas Bold" size="14.0" />
+         </font>
+      </MenuButton>
+      <MenuButton layoutX="86.0" layoutY="14.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: rgb(10,10,10);" text="Create" textFill="WHITE">
+         <items>
+            <MenuItem mnemonicParsing="false" text="Playlist" />
+         </items>
+         <font>
+            <Font name="Consolas Bold" size="14.0" />
+         </font>
+      </MenuButton>
     </children>
     <opaqueInsets>
         <Insets />
