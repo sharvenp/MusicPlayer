@@ -28,7 +28,7 @@ public class MusicPlayer extends Application {
         controller.setStage(stage);
 
         Scene scene = new Scene(root);
-        stage.setTitle("MusicPlayer");
+        stage.setTitle("Tunez");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

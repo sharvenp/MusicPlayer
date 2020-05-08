@@ -1,0 +1,23 @@
+
+================================================= To Do ================================================ : 
+
+- Audio visualization
+- Set pane background to prominent album art color
+- Playlist creation
+- Playlist loading/saving
+- Animations
+
+=============================================== Completed ============================================== :
+
+- Track seeking
+- Metadata extraction
+    - Album
+    - Artist
+    - Title
+    - Album Art
+
+- Basic functionality
+    - Pause/Play
+    - Volume Control
+
+- JavaFX base

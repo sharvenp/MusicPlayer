@@ -2,15 +2,14 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -59,6 +59,7 @@ public class MusicPlayerFXMLController implements Initializable {
     private String title;
     private String artist;
     private String album;
+    private Image defaultImage;
 
 
     private Duration songDuration;
@@ -67,19 +68,21 @@ public class MusicPlayerFXMLController implements Initializable {
     private boolean isPlaying;
 
     
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        updatePanel();
         isPlaying = false;
+        defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png"));
+        
+        updatePanel();
 
         volumeSlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
            
             double volumeSliderValue = volumeSlider.getValue();
 
             if (volumeSliderValue == 0.0) {
-                volumeLabel.setText("🔈");
+//                volumeLabel.setText("🔈");
+                volumeLabel.setText("🔇");
             } else if (volumeSliderValue > 0.0 && volumeSliderValue <= 0.5) {
                 volumeLabel.setText("🔉");
             } else {
@@ -90,6 +93,14 @@ public class MusicPlayerFXMLController implements Initializable {
             updatePlayer();
         });
         
+        songSlider.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable o) {
+                if (!isPlaying && player != null) {
+                    player.seek(songDuration.multiply(songSlider.getValue()));
+                }
+            }
+        });
     }
 
     public void setStage(Stage newStage) {
@@ -105,21 +116,37 @@ public class MusicPlayerFXMLController implements Initializable {
             songSlider.setMax(0);
             timeLabel.setText("--:--/--:--");
             playButton.setText("▶");
+            albumImageView.setImage(defaultImage);
+            
         } else {
-            songNameLabel.setText(currentSong.getName());
+            
+            title = "";
+            artist = "";
+            album = "";
+            albumImageView.setImage(defaultImage);
+            
+            String filteredName = currentSong.getName().replace(".mp3", "");
+            filteredName = filteredName.replace(".wav", "");
+            songNameLabel.setText(filteredName);
+            
             song.getMetadata().addListener((MapChangeListener<String, Object>) c -> {
-                if (c.wasAdded()) {
+                if (c.wasAdded() && c.getValueAdded() != null) {
+                    
+                    if ("raw metadata".equals(c.getKey()))
+                        return;
+                    
                     if ("artist".equals(c.getKey())) {
                         artist = c.getValueAdded().toString();
                     } else if ("title".equals(c.getKey())) {
                         title = c.getValueAdded().toString();
                     } else if ("album".equals(c.getKey())) {
                         album = c.getValueAdded().toString();
-                    } else if ("image".equals(c.getKey())) {
+                    } else if ("image".equals(c.getKey()) && c.getValueAdded() != null) {
                         albumImageView.setImage((Image)c.getValueAdded());
-                        System.out.println("found");
                     }
-                    songNameLabel.setText(String.format("[%s] %s - %s", album, artist, title));
+                    
+                    if (!artist.equals("") && !artist.equals("") && !artist.equals(""))
+                        songNameLabel.setText(String.format("[%s] %s - %s", album, artist, title));
                 }
             });
         }
@@ -131,22 +158,6 @@ public class MusicPlayerFXMLController implements Initializable {
             return;
         
         player.setVolume(volumeSlider.getValue());
-        
-        player.setOnEndOfMedia(new Runnable() {
-            @Override
-            public void run() {
-                if (loop) 
-                {
-                    player.seek(Duration.ZERO);
-                    player.play();
-                }
-                else {
-                    player.stop();
-                    isPlaying = false;
-                }
-                
-            }
-        });
     }
     
     private String formatTime(Duration currentTime) {
@@ -164,17 +175,21 @@ public class MusicPlayerFXMLController implements Initializable {
     
     private void updateDuration() {
         
+        if (player == null) {
+            return;
+        }
+        
         Platform.runLater(new Runnable() {
            public void run() {
              
-                if (player == null) {
-                    return;
-                }
-               
                 Duration currentTime = player.getCurrentTime();
                 timeLabel.setText(formatTime(currentTime));
+                
+                songSlider.setDisable(songDuration.isUnknown());
 
-                if (songDuration.greaterThan(Duration.ZERO) && !songSlider.isValueChanging()) {
+                if (!songSlider.isDisabled() && 
+                    songDuration.greaterThan(Duration.ZERO) && 
+                    !songSlider.isValueChanging()) {
                     songSlider.setValue(currentTime.toMillis() / songDuration.toMillis());
                 }
            }
@@ -183,6 +198,8 @@ public class MusicPlayerFXMLController implements Initializable {
     
     private void playSong(boolean firstTime) {
 
+        isPlaying = true;
+        
         if (!firstTime) {
             player.play();
             return;
@@ -204,16 +221,15 @@ public class MusicPlayerFXMLController implements Initializable {
         
         player.setOnReady(new Runnable() {
             public void run() {
-                updatePlayer();
                 songDuration = player.getMedia().getDuration();
+                updatePlayer();
             }
         });
         
-        songSlider.setMax(1);
+        songSlider.setMax(1.0);
         
         player.play();
         playButton.setText("⏸");
-        isPlaying = true;
     }
 
     @FXML
@@ -225,15 +241,14 @@ public class MusicPlayerFXMLController implements Initializable {
 
         if (isPlaying) {
             // Pause
-            playButton.setText("►");
+            playButton.setText("▶");
             player.pause();
+            isPlaying = false;
         } else {
             // Play
             playButton.setText("⏸");
             playSong(player.getCurrentTime().equals(Duration.ZERO));
         }
-
-        isPlaying = !isPlaying;
     }
 
     @FXML
@@ -255,7 +270,17 @@ public class MusicPlayerFXMLController implements Initializable {
 
     @FXML
     private void previousSong(ActionEvent event) {
-        System.out.println("PREVIOUS SONG");
+        System.out.println(songSlider.getValue());
+        
+        if (songSlider.getValue() < 0.05) {
+            
+            // Previous song in playlist
+            
+        } else {
+            // Replay song
+            player.seek(Duration.ZERO);
+            player.play();
+        }
     }
 
     @FXML
@@ -284,7 +309,25 @@ public class MusicPlayerFXMLController implements Initializable {
     @FXML
     private void toggleLoop(ActionEvent event) {
         loop = loopToggle.isSelected();
-        updatePlayer();
+        
+        if (player == null)
+            return;
+        
+        player.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                if (loop) 
+                {
+                    player.seek(Duration.ZERO);
+                    player.play();
+                }
+                else {
+                    player.stop();
+                    isPlaying = false;
+                }
+                
+            }
+        });
     }
 
     @FXML
@@ -295,5 +338,29 @@ public class MusicPlayerFXMLController implements Initializable {
     @FXML
     private void exitApplication(ActionEvent event) {
         Platform.exit();
+    }
+
+    @FXML
+    private void releasedOnSongSlider(MouseEvent event) {
+        if (player == null)
+            return;
+        
+        isPlaying = true;
+        player.play();
+        
+        updatePlayer();
+    }
+
+    @FXML
+    private void pressedOnSongSlider(MouseEvent event) {
+        if (player == null)
+            return;
+        
+        isPlaying = false;
+        player.pause();        
+        
+        songSlider.setValue(event.getX() / songSlider.getWidth());
+        
+        player.seek(songDuration.multiply(songSlider.getValue()));
     }
 }
