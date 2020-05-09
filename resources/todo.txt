@@ -2,7 +2,6 @@
 ================================================= To Do ================================================ : 
 
 - Audio visualization
-- Set pane background to prominent album art color
 - Playlist creation
 - Playlist loading/saving
 - Animations
@@ -21,3 +20,8 @@
     - Volume Control
 
 - JavaFX base
+
+=============================================== Cancelled ============================================== :
+
+- Set pane background to prominent album art color
+    - JavaFX threading issues causes the application to hang

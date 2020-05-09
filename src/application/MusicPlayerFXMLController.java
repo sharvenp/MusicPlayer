@@ -1,5 +1,7 @@
 package application;
 
+import util.ImageAnalyzer;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -20,6 +22,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -33,6 +36,8 @@ import javafx.util.Duration;
  */
 public class MusicPlayerFXMLController implements Initializable {
 
+    @FXML
+    private AnchorPane playerAnchorPane;
     @FXML
     private Slider songSlider;
     @FXML
@@ -59,14 +64,13 @@ public class MusicPlayerFXMLController implements Initializable {
     private String title;
     private String artist;
     private String album;
+    private Image albumArtImage;
     private Image defaultImage;
-
 
     private Duration songDuration;
     private boolean loop;
     private boolean shuffle;
     private boolean isPlaying;
-
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -81,7 +85,6 @@ public class MusicPlayerFXMLController implements Initializable {
             double volumeSliderValue = volumeSlider.getValue();
 
             if (volumeSliderValue == 0.0) {
-//                volumeLabel.setText("🔈");
                 volumeLabel.setText("🔇");
             } else if (volumeSliderValue > 0.0 && volumeSliderValue <= 0.5) {
                 volumeLabel.setText("🔉");
@@ -106,6 +109,10 @@ public class MusicPlayerFXMLController implements Initializable {
     public void setStage(Stage newStage) {
         stage = newStage;
     }
+    
+    public void updateAlbumArtImage(Image newImage) {
+        albumImageView.setImage(newImage);
+    }
 
     private void updatePanel() {
 
@@ -116,14 +123,16 @@ public class MusicPlayerFXMLController implements Initializable {
             songSlider.setMax(0);
             timeLabel.setText("--:--/--:--");
             playButton.setText("▶");
-            albumImageView.setImage(defaultImage);
+            
+            updateAlbumArtImage(defaultImage);
             
         } else {
             
             title = "";
             artist = "";
             album = "";
-            albumImageView.setImage(defaultImage);
+            
+            updateAlbumArtImage(defaultImage);
             
             String filteredName = currentSong.getName().replace(".mp3", "");
             filteredName = filteredName.replace(".wav", "");
@@ -142,7 +151,8 @@ public class MusicPlayerFXMLController implements Initializable {
                     } else if ("album".equals(c.getKey())) {
                         album = c.getValueAdded().toString();
                     } else if ("image".equals(c.getKey()) && c.getValueAdded() != null) {
-                        albumImageView.setImage((Image)c.getValueAdded());
+                        albumArtImage = (Image)c.getValueAdded();
+                        updateAlbumArtImage((Image)c.getValueAdded());
                     }
                     
                     if (!artist.equals("") && !artist.equals("") && !artist.equals(""))

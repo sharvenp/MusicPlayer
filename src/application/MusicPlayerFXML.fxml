@@ -17,7 +17,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="286.0" prefWidth="898.0" style="-fx-background-color: rgb(10,10,10);" styleClass="imageView" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
+<AnchorPane id="AnchorPane" fx:id="playerAnchorPane" prefHeight="286.0" prefWidth="898.0" style="-fx-background-color: rgb(10,10,10);" styleClass="imageView" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
     <children>
         <Button fx:id="playButton" accessibleText="Play/Pause" layoutX="315.0" layoutY="220.0" mnemonicParsing="false" onAction="#toggleSong" prefHeight="25.0" prefWidth="72.0" text="►">
             <font>
@@ -87,7 +87,7 @@
          </effect>
       </Rectangle>
       <ImageView fx:id="albumImageView" fitHeight="194.0" fitWidth="194.0" layoutX="23.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true" />
-      <MenuButton layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="File" textFill="WHITE">
+      <MenuButton layoutX="798.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="File" textFill="WHITE">
         <items>
           <MenuItem mnemonicParsing="false" onAction="#selectSong" text="Open" />
           <MenuItem mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
@@ -96,6 +96,11 @@
             <Font name="Consolas Bold" size="14.0" />
          </font>
       </MenuButton>
+      <Label layoutX="20.0" layoutY="5.0" opacity="0.76" text="Tunez" textFill="#ff4e4e">
+         <font>
+            <Font name="m6x11" size="44.0" />
+         </font>
+      </Label>
     </children>
     <opaqueInsets>
         <Insets />
