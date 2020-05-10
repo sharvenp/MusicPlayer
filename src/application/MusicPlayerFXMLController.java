@@ -15,6 +15,8 @@ import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -23,8 +25,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -56,11 +60,14 @@ public class MusicPlayerFXMLController implements Initializable {
     private Label timeLabel;
     @FXML
     private ImageView albumImageView;
+    @FXML
+    private Canvas spectrumCanvas;
     
     private Stage stage;
     private File currentSong;
     private MediaPlayer player;
     private Media song;
+    private PlayerSpectrumListener spectrumListener;
     private String title;
     private String artist;
     private String album;
@@ -91,8 +98,6 @@ public class MusicPlayerFXMLController implements Initializable {
             } else {
                 volumeLabel.setText("🔊");
             }
-
-            
             updatePlayer();
         });
         
@@ -164,10 +169,11 @@ public class MusicPlayerFXMLController implements Initializable {
 
     private void updatePlayer() {
         
-        if (player == null)
+        if (player == null || spectrumListener == null)
             return;
         
         player.setVolume(volumeSlider.getValue());
+        spectrumListener.setVolume(volumeSlider.getValue());
     }
     
     private String formatTime(Duration currentTime) {
@@ -236,6 +242,12 @@ public class MusicPlayerFXMLController implements Initializable {
             }
         });
         
+        spectrumListener = new PlayerSpectrumListener(spectrumCanvas, player);
+        player.setAudioSpectrumListener(spectrumListener);
+        player.setAudioSpectrumNumBands(64);
+        player.setAudioSpectrumInterval(0.001);
+        player.setAudioSpectrumThreshold(-75);
+        
         songSlider.setMax(1.0);
         
         player.play();
@@ -254,9 +266,15 @@ public class MusicPlayerFXMLController implements Initializable {
             playButton.setText("▶");
             player.pause();
             isPlaying = false;
+            
+            spectrumListener.setSkip(true);
+            if (spectrumListener != null)
+                spectrumListener.clearCanvas();
+            
         } else {
             // Play
             playButton.setText("⏸");
+            spectrumListener.setSkip(false);
             playSong(player.getCurrentTime().equals(Duration.ZERO));
         }
     }
@@ -280,8 +298,6 @@ public class MusicPlayerFXMLController implements Initializable {
 
     @FXML
     private void previousSong(ActionEvent event) {
-        System.out.println(songSlider.getValue());
-        
         if (songSlider.getValue() < 0.05) {
             
             // Previous song in playlist
@@ -357,6 +373,7 @@ public class MusicPlayerFXMLController implements Initializable {
         
         isPlaying = true;
         player.play();
+        spectrumListener.setSkip(false);
         
         updatePlayer();
     }
@@ -367,7 +384,8 @@ public class MusicPlayerFXMLController implements Initializable {
             return;
         
         isPlaying = false;
-        player.pause();        
+        player.pause();
+        spectrumListener.setSkip(true);
         
         songSlider.setValue(event.getX() / songSlider.getWidth());
         

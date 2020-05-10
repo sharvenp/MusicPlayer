@@ -1,13 +1,13 @@
 
 ================================================= To Do ================================================ : 
 
-- Audio visualization
 - Playlist creation
 - Playlist loading/saving
 - Animations
 
 =============================================== Completed ============================================== :
 
+- Audio visualization
 - Track seeking
 - Metadata extraction
     - Album
