@@ -1,4 +1,4 @@
-# Tunez 1.0 #
+# Tunez #
 
 ## About ##
 
@@ -19,3 +19,8 @@ Hence when the executable is available, the only dependency is that the latest v
 © 2020 Sharven P. Dhanasekar All Rights Reserved
 
 [GPLv3 Licensing Information](https://github.com/sharvenp/Tunez/blob/master/LICENSE.md)
+
+## Features to Implement ##
+
+[To Do List](resources/todo.txt)
+
