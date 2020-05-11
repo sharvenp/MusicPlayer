@@ -2,7 +2,7 @@
 
 ## About ##
 
-<img align="center" width="100%" height="100%" src="readme_resources/example.PNG">
+<img align="center" width="100%" height="100%" src="readme_resources/exampleImage.PNG">
 
 Tunez is a simple Music Media Player. It can play `.mp3` and `.wav` files and supports all media commands such as play, pause, skip, track seeking, etc.
 
