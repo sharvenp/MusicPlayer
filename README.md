@@ -16,3 +16,4 @@ Hence when the executable is available, the only dependency is that the latest v
 
 ## License ## 
 
+[GPLv3 Licensing Information](https://github.com/sharvenp/Tunez/blob/master/LICENSE.md)
