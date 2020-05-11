@@ -1,4 +1,4 @@
-# Tunez #
+# Tunez [V 1.0] © 2020 Sharven P. Dhanasekar All Rights Reserved#
 
 ## About ##
 
