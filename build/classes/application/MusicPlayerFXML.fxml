@@ -88,11 +88,20 @@
          </effect>
       </Rectangle>
       <ImageView fx:id="albumImageView" fitHeight="194.0" fitWidth="194.0" layoutX="23.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true" />
-      <MenuButton layoutX="798.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="File" textFill="WHITE">
+      <MenuButton layoutX="720.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="File" textFill="WHITE">
         <items>
           <MenuItem mnemonicParsing="false" onAction="#selectSong" text="Open" />
           <MenuItem mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
         </items>
+         <font>
+            <Font name="Consolas Bold" size="14.0" />
+         </font>
+      </MenuButton>
+      <MenuButton layoutX="811.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" style="-fx-background-color: rgb(10,10,10);" text="View" textFill="WHITE">
+         <items>
+            <MenuItem mnemonicParsing="false" onAction="#toggleAudioSpectrum" text="Toggle Audio Spectrum" />
+            <MenuItem mnemonicParsing="false" onAction="#toggleDarkTheme" text="Toggle Dark Theme" />
+         </items>
          <font>
             <Font name="Consolas Bold" size="14.0" />
          </font>

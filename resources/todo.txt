@@ -1,12 +1,16 @@
 
 ================================================= To Do ================================================ : 
 
+- Light/Dark Theme selection
 - Playlist creation
 - Playlist loading/saving
 - Animations
+- Audio equalizer and effects
+	- Control bass/treble, etc.
 
 =============================================== Completed ============================================== :
 
+- Enable/Disable visualizations
 - Audio visualization
 - Track seeking
 - Metadata extraction

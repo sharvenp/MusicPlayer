@@ -78,11 +78,13 @@ public class MusicPlayerFXMLController implements Initializable {
     private boolean loop;
     private boolean shuffle;
     private boolean isPlaying;
+    private boolean toggleSpectrum;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
         isPlaying = false;
+        toggleSpectrum = false;
         defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png"));
         
         updatePanel();
@@ -243,6 +245,7 @@ public class MusicPlayerFXMLController implements Initializable {
         });
         
         spectrumListener = new PlayerSpectrumListener(spectrumCanvas, player);
+        spectrumListener.setDisable(toggleSpectrum);
         player.setAudioSpectrumListener(spectrumListener);
         player.setAudioSpectrumNumBands(64);
         player.setAudioSpectrumInterval(0.001);
@@ -390,5 +393,18 @@ public class MusicPlayerFXMLController implements Initializable {
         songSlider.setValue(event.getX() / songSlider.getWidth());
         
         player.seek(songDuration.multiply(songSlider.getValue()));
+    }
+
+    @FXML
+    private void toggleAudioSpectrum(ActionEvent event) {
+        toggleSpectrum = !toggleSpectrum;
+        
+        if (spectrumListener != null)
+            spectrumListener.setDisable(toggleSpectrum);
+    }
+
+    @FXML
+    private void toggleDarkTheme(ActionEvent event) {
+        System.out.println("Toggled dark theme");
     }
 }

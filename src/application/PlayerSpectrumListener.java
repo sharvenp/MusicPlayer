@@ -22,8 +22,10 @@ public class PlayerSpectrumListener implements AudioSpectrumListener{
     
     private double volume;
     private boolean skip;
+    private boolean disable;
     
     public PlayerSpectrumListener(Canvas spectrumCanvas, MediaPlayer player) {
+        disable = false;
         this.spectrumCanvas = spectrumCanvas;
         this.player = player;
     }
@@ -34,6 +36,10 @@ public class PlayerSpectrumListener implements AudioSpectrumListener{
     
     public void setSkip(boolean skip) {
         this.skip = skip;
+    }
+    
+    public void setDisable(boolean newVal) {
+        this.disable = newVal;
     }
     
     public void clearCanvas() {
@@ -48,7 +54,7 @@ public class PlayerSpectrumListener implements AudioSpectrumListener{
         GraphicsContext gc = spectrumCanvas.getGraphicsContext2D();
         gc.setFill(new Color(1, 0.4, 0.4, 0.6));
         
-        if (skip)
+        if (skip || disable)
             return;
         
         double maxHeight = (double) spectrumCanvas.getHeight() * 0.6;
