@@ -1,4 +1,4 @@
-# Tunez [V 1.0] #
+# Tunez 1.0 #
 
 ## About ##
 
