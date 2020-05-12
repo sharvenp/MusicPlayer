@@ -1,7 +1,9 @@
 package application;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -15,16 +17,23 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -36,6 +45,8 @@ import javafx.util.Duration;
  */
 public class MusicPlayerFXMLController implements Initializable {
 
+    @FXML
+    private Label titleLabel;
     @FXML
     private Slider songSlider;
     @FXML
@@ -80,6 +91,7 @@ public class MusicPlayerFXMLController implements Initializable {
     private double xOffset;
     private double yOffset;
     
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -113,6 +125,8 @@ public class MusicPlayerFXMLController implements Initializable {
                 }
             }
         });
+        
+        titleLabel.setFont(Font.loadFont(getClass().getClassLoader().getResourceAsStream("joystix_monospace.ttf"), 44));
     }
 
     public void setStage(Stage newStage) {
@@ -438,5 +452,68 @@ public class MusicPlayerFXMLController implements Initializable {
     private void dragPane(MouseEvent event) {
         stage.setX(event.getScreenX() + xOffset);
         stage.setY(event.getScreenY() + yOffset);
+    }
+
+    @FXML
+    private void openManual(ActionEvent event) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setContentText("Still working on it! - Sharven");
+        alert.setTitle("User Manual");
+        alert.setHeaderText(null);
+        ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
+        
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().clear();
+
+        if (darkTheme.isSelected()) {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
+        } else {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+        }
+
+        dialogPane.getStyleClass().add("dialogue-pane");
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void openAbout(ActionEvent event) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("Tunez v1.2");
+        
+        ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
+
+        FlowPane pane = new FlowPane();
+        VBox vbox = new VBox();
+        vbox.setSpacing(7);
+        Label label = new Label("Tunez is a minimalistic media player implemented in Java using JavaFX and FXML documents.\n\nMore information can be found here:");
+        Hyperlink link = new Hyperlink("https://github.com/sharvenp/Tunez");
+        link.setStyle("-fx-font-family: Consolas; -fx-font-size: 14;");
+        Label label2 = new Label("© 2020 Sharven P. Dhanasekar All Rights Reserved");
+        vbox.getChildren().addAll(label, link, label2);
+        pane.getChildren().add(vbox);
+
+        link.setOnAction((e) -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://github.com/sharvenp/Tunez"));
+                alert.close();
+            } catch (Exception exc) {
+                System.out.println("Could not connect.");
+            }
+        });
+        
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.contentProperty().set(pane);
+        dialogPane.getStylesheets().clear();
+
+        if (darkTheme.isSelected()) {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
+        } else {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+        }
+
+        dialogPane.getStyleClass().add("dialogue-pane");
+        
+        alert.showAndWait();
     }
 }
