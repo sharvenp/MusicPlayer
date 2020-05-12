@@ -1,13 +1,16 @@
 
 #AnchorPane {
 	-fx-background-color:  rgb(250,250,250);
-	-fx-background-radius: 14 14 14 14;
-	-fx-border-radius: 14 14 14 14;
+	-fx-background-radius: 16 16 16 16;
+	-fx-border-radius: 16 16 16 16;
 }
 
 #MenuDropDown {
-	-fx-text-fill: rgb(10, 10, 10);
 	-fx-background-color:  rgb(180,180,180);
+}
+
+#MenuDropDown .label {
+	-fx-text-fill: rgb(10, 10, 10);
 }
 
 #Text {
@@ -76,4 +79,23 @@
 
 .check-box:selected .box {
     -fx-background-color: rgb(180, 180, 180);
+}
+
+.dialog-pane {
+    -fx-background-color: rgb(240, 240, 240);
+}
+
+.dialog-pane .label {
+	-fx-font-family: Consolas;
+	-fx-font-size: 15;
+    -fx-text-fill: rgb(10, 10, 10);
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: rgb(240, 240, 240);
+}
+
+.dialog-pane:header .header-panel .label {
+	-fx-font-family: Consolas;
+    -fx-font-size: 26;
 }

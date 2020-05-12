@@ -54,7 +54,7 @@ public class PlayerSpectrumListener implements AudioSpectrumListener{
         GraphicsContext gc = spectrumCanvas.getGraphicsContext2D();
         gc.setFill(new Color(1, 0.4, 0.4, 0.6));
         
-        if (skip || enable)
+        if (skip || !enable)
             return;
         
         double maxHeight = (double) spectrumCanvas.getHeight() * 0.6;
