@@ -16,13 +16,13 @@ The application is coded in Java using JavaFX and FXML files. I am currently try
 
 Hence when the executable is available, the only dependency is that the latest version of [Java](https://java.com/en/download/help/download_options.xml) needs to be installed on your computer.
 
-# Versions #
+## Versions ##
 
 [Version 1.x](https://github.com/sharvenp/Tunez/tree/v1)
 
 ## License ## 
 
-© 2020 Sharven P. Dhanasekar All Rights Reserved
+© 2020 sharvenp All Rights Reserved
 
 [GPLv3 Licensing Information](https://github.com/sharvenp/Tunez/blob/master/LICENSE.md)
 
