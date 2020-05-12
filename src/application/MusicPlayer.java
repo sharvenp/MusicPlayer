@@ -11,7 +11,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  *
@@ -29,12 +31,16 @@ public class MusicPlayer extends Application {
         controller.setStage(stage);
 
         Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        controller.setScene(scene);
+        controller.toggleDarkTheme();   
+        
         stage.setTitle("Tunez");
         stage.setScene(scene);
         stage.setResizable(false);
         
         stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png")));
-        
         stage.show();
     }
 
