@@ -1,7 +1,5 @@
 package application;
 
-import util.ImageAnalyzer;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -15,20 +13,18 @@ import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -40,8 +36,6 @@ import javafx.util.Duration;
  */
 public class MusicPlayerFXMLController implements Initializable {
 
-    @FXML
-    private AnchorPane playerAnchorPane;
     @FXML
     private Slider songSlider;
     @FXML
@@ -62,7 +56,12 @@ public class MusicPlayerFXMLController implements Initializable {
     private ImageView albumImageView;
     @FXML
     private Canvas spectrumCanvas;
+    @FXML
+    private CheckMenuItem audioSpectrum;
+    @FXML
+    private CheckMenuItem darkTheme;
     
+    private Scene scene;
     private Stage stage;
     private File currentSong;
     private MediaPlayer player;
@@ -78,13 +77,16 @@ public class MusicPlayerFXMLController implements Initializable {
     private boolean loop;
     private boolean shuffle;
     private boolean isPlaying;
-    private boolean toggleSpectrum;
+    private double xOffset;
+    private double yOffset;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        xOffset = 0;
+        yOffset = 0;
+        
         isPlaying = false;
-        toggleSpectrum = false;
         defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png"));
         
         updatePanel();
@@ -114,18 +116,33 @@ public class MusicPlayerFXMLController implements Initializable {
     }
 
     public void setStage(Stage newStage) {
-        stage = newStage;
+        this.stage = newStage;
     }
     
-    public void updateAlbumArtImage(Image newImage) {
+    public void setScene(Scene newScene) {
+        this.scene = newScene;
+    }
+    
+    private void updateAlbumArtImage(Image newImage) {
         albumImageView.setImage(newImage);
     }
 
+    public void updateTheme() {
+        scene.getStylesheets().clear();
+        
+        if (darkTheme.isSelected()) {
+            scene.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
+        } else {
+            scene.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+        }
+    }
+    
     private void updatePanel() {
 
         songSlider.setValue(0);
 
         if (currentSong == null) {
+            
             songNameLabel.setText("...");
             songSlider.setMax(0);
             timeLabel.setText("--:--/--:--");
@@ -245,7 +262,7 @@ public class MusicPlayerFXMLController implements Initializable {
         });
         
         spectrumListener = new PlayerSpectrumListener(spectrumCanvas, player);
-        spectrumListener.setDisable(toggleSpectrum);
+        spectrumListener.setEnable(audioSpectrum.isSelected());
         player.setAudioSpectrumListener(spectrumListener);
         player.setAudioSpectrumNumBands(64);
         player.setAudioSpectrumInterval(0.001);
@@ -390,21 +407,36 @@ public class MusicPlayerFXMLController implements Initializable {
         player.pause();
         spectrumListener.setSkip(true);
         
-        songSlider.setValue(event.getX() / songSlider.getWidth());
+        songSlider.setValue((double) event.getX() / (double) songSlider.getWidth());
         
         player.seek(songDuration.multiply(songSlider.getValue()));
     }
 
     @FXML
     private void toggleAudioSpectrum(ActionEvent event) {
-        toggleSpectrum = !toggleSpectrum;
-        
         if (spectrumListener != null)
-            spectrumListener.setDisable(toggleSpectrum);
+            spectrumListener.setEnable(audioSpectrum.isSelected());
     }
 
     @FXML
     private void toggleDarkTheme(ActionEvent event) {
-        System.out.println("Toggled dark theme");
+        updateTheme();
+    }
+
+    @FXML
+    private void minimizeApplication(ActionEvent event) {
+        stage.setIconified(true);
+    }
+
+    @FXML
+    private void pressedOnPane(MouseEvent event) {
+        xOffset = stage.getX() - event.getScreenX();
+        yOffset = stage.getY() - event.getScreenY();
+    }
+    
+    @FXML
+    private void dragPane(MouseEvent event) {
+        stage.setX(event.getScreenX() + xOffset);
+        stage.setY(event.getScreenY() + yOffset);
     }
 }

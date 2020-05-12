@@ -1,0 +1,79 @@
+
+#AnchorPane {
+	-fx-background-color:  rgb(10,10,10);
+	-fx-background-radius: 14 14 14 14;
+	-fx-border-radius: 14 14 14 14;
+}
+
+#MenuDropDown {
+	-fx-text-fill: rgb(255, 255, 255);
+	-fx-background-color: rgb(70,70,70);
+}
+
+#Text {
+	-fx-text-fill:  rgb(255,255,255);
+}
+
+#CheckBox {
+	-fx-text-fill: rgb(255, 255, 255);
+}
+
+#Button {
+	-fx-background-color:  rgb(70,70,70);
+	-fx-text-fill: rgb(255, 255, 255);
+}
+
+#Button:hover {
+	-fx-background-color:  rgb(110,110,110);
+}
+
+#ExitButton {
+	-fx-background-color:  rgb(70,70,70);
+	-fx-text-fill: rgb(255, 255, 255);
+	-fx-background-radius: 6 6 6 6;
+}
+
+#ExitButton:hover {
+	-fx-background-color:  rgb(255,120,120);
+	-fx-text-fill: rgb(255, 255, 255);
+}
+
+#MinimizeButton {
+	-fx-background-color:  rgb(70,70,70);
+	-fx-text-fill: rgb(255, 255, 255);
+	-fx-background-radius: 6 6 6 6;
+}
+
+#MinimizeButton:hover {
+	-fx-background-color:  rgb(40,40,40);
+	-fx-text-fill: rgb(255, 255, 255);
+}
+
+.menu-item .label {
+	-fx-font-family: 'Consolas';
+	-fx-font-size: 14;
+    -fx-text-fill: rgb(255, 255, 255);
+}
+
+.menu-item:focused {
+     -fx-background-color: rgb(40, 40, 40);
+}
+
+.context-menu {
+    -fx-background-color:  rgb(70,70,70);
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+    -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
+}
+
+.check-box .box {
+    -fx-background-color: rgb(70, 70, 70);
+}
+
+.check-box:selected .mark {
+    -fx-background-color: rgb(255, 255, 255);
+}
+
+.check-box:selected .box {
+    -fx-background-color: rgb(70, 70, 70);
+}
