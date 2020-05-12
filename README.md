@@ -22,7 +22,7 @@ Hence when the executable is available, the only dependency is that the latest v
 
 ## License ## 
 
-© 2020 Sharven P. Dhanasekar All Rights Reserved
+© 2020 sharvenp All Rights Reserved
 
 [GPLv3 Licensing Information](https://github.com/sharvenp/Tunez/blob/master/LICENSE.md)
 
