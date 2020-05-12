@@ -77,10 +77,15 @@ public class MusicPlayerFXMLController implements Initializable {
     private boolean loop;
     private boolean shuffle;
     private boolean isPlaying;
+    private double xOffset;
+    private double yOffset;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        xOffset = 0;
+        yOffset = 0;
+        
         isPlaying = false;
         defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png"));
         
@@ -122,8 +127,7 @@ public class MusicPlayerFXMLController implements Initializable {
         albumImageView.setImage(newImage);
     }
 
-    @FXML
-    public void toggleDarkTheme() {
+    public void updateTheme() {
         scene.getStylesheets().clear();
         
         if (darkTheme.isSelected()) {
@@ -414,7 +418,25 @@ public class MusicPlayerFXMLController implements Initializable {
             spectrumListener.setEnable(audioSpectrum.isSelected());
     }
 
+    @FXML
     private void toggleDarkTheme(ActionEvent event) {
-        toggleDarkTheme();
+        updateTheme();
+    }
+
+    @FXML
+    private void minimizeApplication(ActionEvent event) {
+        stage.setIconified(true);
+    }
+
+    @FXML
+    private void pressedOnPane(MouseEvent event) {
+        xOffset = stage.getX() - event.getScreenX();
+        yOffset = stage.getY() - event.getScreenY();
+    }
+    
+    @FXML
+    private void dragPane(MouseEvent event) {
+        stage.setX(event.getScreenX() + xOffset);
+        stage.setY(event.getScreenY() + yOffset);
     }
 }

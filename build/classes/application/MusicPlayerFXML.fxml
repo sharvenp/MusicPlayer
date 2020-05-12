@@ -19,7 +19,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="286.0" prefWidth="898.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
+<AnchorPane id="AnchorPane" onMouseDragged="#dragPane" onMousePressed="#pressedOnPane" prefHeight="286.0" prefWidth="898.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MusicPlayerFXMLController">
     <children>
         <Button id="Button" fx:id="playButton" accessibleText="Play/Pause" layoutX="315.0" layoutY="220.0" mnemonicParsing="false" onAction="#toggleSong" prefHeight="25.0" prefWidth="72.0" text="►">
             <font>
@@ -36,7 +36,7 @@
                 <Font name="Consolas" size="14.0" />
             </font>
         </Button>
-        <Slider fx:id="songSlider" layoutX="236.0" layoutY="113.0" max="1.0" onMousePressed="#pressedOnSongSlider" onMouseReleased="#releasedOnSongSlider" prefHeight="14.0" prefWidth="634.0">
+        <Slider fx:id="songSlider" layoutX="236.0" layoutY="133.0" max="1.0" onMousePressed="#pressedOnSongSlider" onMouseReleased="#releasedOnSongSlider" prefHeight="14.0" prefWidth="634.0">
             <cursor>
                 <Cursor fx:constant="OPEN_HAND" />
             </cursor>
@@ -48,7 +48,7 @@
             </Lighting>
          </effect>
         </Slider>
-        <Label id="Text" fx:id="songNameLabel" layoutX="236.0" layoutY="58.0" prefHeight="44.0" prefWidth="536.0" text="[Album] Artist - Song Name" textFill="#515151" wrapText="true">
+        <Label id="Text" fx:id="songNameLabel" layoutX="236.0" layoutY="89.0" prefHeight="44.0" prefWidth="536.0" text="[Album] Artist - Song Name" textFill="#515151" wrapText="true">
             <font>
                 <Font name="Consolas Bold" size="18.0" />
             </font>
@@ -61,11 +61,11 @@
          <font>
             <Font size="14.0" />
          </font></CheckBox>
-        <Slider fx:id="volumeSlider" blockIncrement="1.0" layoutX="278.0" layoutY="165.0" max="1.0" value="1.0">
+        <Slider fx:id="volumeSlider" blockIncrement="1.0" layoutX="271.0" layoutY="173.0" max="1.0" value="1.0">
          <cursor>
             <Cursor fx:constant="OPEN_HAND" />
          </cursor></Slider>
-        <Label id="Text" fx:id="volumeLabel" layoutX="243.0" layoutY="158.0" prefHeight="28.0" prefWidth="39.0" text="🔊">
+        <Label id="Text" fx:id="volumeLabel" layoutX="243.0" layoutY="166.0" prefHeight="28.0" prefWidth="28.0" text="🔊">
             <font>
                 <Font name="Monospaced Bold" size="24.0" />
             </font>
@@ -89,16 +89,15 @@
          </effect>
       </Rectangle>
       <ImageView fx:id="albumImageView" fitHeight="194.0" fitWidth="194.0" layoutX="23.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true" />
-      <MenuButton id="MenuDropDown" layoutX="726.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" text="File">
+      <MenuButton id="MenuDropDown" layoutX="20.0" layoutY="14.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" text="File">
         <items>
           <MenuItem id="MenuDropDownItem" mnemonicParsing="false" onAction="#selectSong" text="Open" />
-          <MenuItem id="MenuDropDownItem" mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
         </items>
          <font>
             <Font name="Consolas Bold" size="14.0" />
          </font>
       </MenuButton>
-      <MenuButton id="MenuDropDown" layoutX="811.0" layoutY="16.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" text="View">
+      <MenuButton id="MenuDropDown" layoutX="105.0" layoutY="14.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="72.0" text="View">
          <items>
             <CheckMenuItem id="MenuDropDownItem" fx:id="audioSpectrum" mnemonicParsing="false" onAction="#toggleAudioSpectrum" text="Audio Spectrum" />
             <CheckMenuItem id="MenuDropDownItem" fx:id="darkTheme" mnemonicParsing="false" onAction="#toggleDarkTheme" selected="true" text="Dark Theme" />
@@ -107,12 +106,22 @@
             <Font name="Consolas Bold" size="14.0" />
          </font>
       </MenuButton>
-      <Label layoutX="20.0" layoutY="5.0" opacity="0.76" prefWidth="200.0" text="Tunez" textFill="#ff4e4e">
+      <Label layoutX="236.0" layoutY="8.0" opacity="0.76" prefHeight="66.0" prefWidth="140.0" text="Tunez" textFill="#ff4e4e">
          <font>
-            <Font name="m6x11" size="44.0" />
+            <Font name="m6x11" size="60.0" />
          </font>
       </Label>
       <Canvas fx:id="spectrumCanvas" height="194.0" layoutX="23.0" layoutY="60.0" width="194.0" />
+      <Button id="ExitButton" layoutX="854.0" layoutY="15.0" mnemonicParsing="false" onAction="#exitApplication" text="X">
+         <font>
+            <Font name="Consolas Bold" size="14.0" />
+         </font>
+      </Button>
+      <Button id="MinimizeButton" layoutX="818.0" layoutY="14.0" mnemonicParsing="false" onAction="#minimizeApplication" text="_">
+         <font>
+            <Font name="Consolas Bold" size="14.0" />
+         </font>
+      </Button>
     </children>
     <opaqueInsets>
         <Insets />

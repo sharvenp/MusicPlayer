@@ -34,7 +34,7 @@ public class MusicPlayer extends Application {
         scene.setFill(Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);
         controller.setScene(scene);
-        controller.toggleDarkTheme();   
+        controller.updateTheme();
         
         stage.setTitle("Tunez");
         stage.setScene(scene);
