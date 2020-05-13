@@ -3,12 +3,17 @@
 
 - Create manual to use the application
 - Playlist 
+    - create
+    - add song(s)
     - loading/saving
     - metadata extraction for files
     - searching and sorting by categories
+
 - Animations
 - Audio equalizer and effects
 	- Control bass/treble, etc.
+
+- Document code 
 
 =============================================== Completed ============================================== :
 
@@ -16,8 +21,10 @@
     - Manual
     - About
     - Styling
+
 - Light/Dark Theme selection
     - Swap between css files to change theme
+
 - Enable/Disable visualizations
 - Audio visualization
 - Track seeking

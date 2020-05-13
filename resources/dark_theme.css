@@ -27,7 +27,7 @@
 }
 
 #Button:hover {
-	-fx-background-color:  rgb(110,110,110);
+	-fx-background-color:  rgb(40,40,40);
 }
 
 #ExitButton {
@@ -97,5 +97,5 @@
 
 .dialog-pane:header .header-panel .label {
 	-fx-font-family: Consolas;
-    -fx-font-size: 26;
+    -fx-font-size: 22;
 }

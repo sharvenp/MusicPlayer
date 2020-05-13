@@ -1,15 +1,19 @@
 package application;
 
+import playlist.PlaylistManager;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
@@ -20,12 +24,16 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -71,6 +79,10 @@ public class MusicPlayerFXMLController implements Initializable {
     private CheckMenuItem audioSpectrum;
     @FXML
     private CheckMenuItem darkTheme;
+    @FXML
+    private TitledPane playlistTitlePane;
+    @FXML
+    private TableView<Object> playlistTable;
     
     private Scene scene;
     private Stage stage;
@@ -78,6 +90,7 @@ public class MusicPlayerFXMLController implements Initializable {
     private MediaPlayer player;
     private Media song;
     private PlayerSpectrumListener spectrumListener;
+    private PlaylistManager playlistManager;
     private String title;
     private String artist;
     private String album;
@@ -86,12 +99,10 @@ public class MusicPlayerFXMLController implements Initializable {
 
     private Duration songDuration;
     private boolean loop;
-    private boolean shuffle;
     private boolean isPlaying;
     private double xOffset;
     private double yOffset;
-    
-    
+  
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -99,8 +110,12 @@ public class MusicPlayerFXMLController implements Initializable {
         yOffset = 0;
         
         isPlaying = false;
-        defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png"));
         
+        if (darkTheme.isSelected())
+            defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArtDark.png"));
+        else
+            defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArtLight.png"));
+
         updatePanel();
 
         volumeSlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
@@ -125,12 +140,29 @@ public class MusicPlayerFXMLController implements Initializable {
                 }
             }
         });
+
+        playlistTitlePane.heightProperty().addListener(new ChangeListener<Number>()  {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+
+                if (stage == null)
+                    return;
+                
+                if (oldVal.doubleValue() == 0) {
+                    // Init
+                    stage.setHeight(340);
+                } else {
+                    stage.setHeight(stage.getHeight() + (newVal.doubleValue() - oldVal.doubleValue()));
+                }
+            }
+        });
         
         titleLabel.setFont(Font.loadFont(getClass().getClassLoader().getResourceAsStream("joystix_monospace.ttf"), 44));
     }
 
     public void setStage(Stage newStage) {
         this.stage = newStage;
+        stage.getIcons().add(defaultImage);
     }
     
     public void setScene(Scene newScene) {
@@ -145,9 +177,18 @@ public class MusicPlayerFXMLController implements Initializable {
         scene.getStylesheets().clear();
         
         if (darkTheme.isSelected()) {
+            defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArtDark.png"));
             scene.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
         } else {
+            defaultImage = new Image(getClass().getClassLoader().getResourceAsStream("defaultArtLight.png"));
             scene.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+        }
+        
+        if (albumArtImage == null)
+        {
+            updateAlbumArtImage(defaultImage);
+            stage.getIcons().clear();
+            stage.getIcons().add(defaultImage);
         }
     }
     
@@ -169,6 +210,7 @@ public class MusicPlayerFXMLController implements Initializable {
             title = "";
             artist = "";
             album = "";
+            albumArtImage = null;
             
             updateAlbumArtImage(defaultImage);
             
@@ -207,6 +249,12 @@ public class MusicPlayerFXMLController implements Initializable {
         
         player.setVolume(volumeSlider.getValue());
         spectrumListener.setVolume(volumeSlider.getValue());
+    }
+    
+    private void createNewPlaylist() {
+        playlistManager = new PlaylistManager(null, playlistTable);
+        playlistTable.setDisable(false);
+        playlistTitlePane.expandedProperty().setValue(true);
     }
     
     private String formatTime(Duration currentTime) {
@@ -287,6 +335,38 @@ public class MusicPlayerFXMLController implements Initializable {
         player.play();
         playButton.setText("⏸");
     }
+    
+    private void showNoPlaylistError() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Add to Playlist");
+        alert.setHeaderText("No existing playlist.");
+        alert.setContentText("You have not created a playlist. Do you wish to create one?");
+        ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().clear();
+
+        if (darkTheme.isSelected()) {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
+        } else {
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+        }
+
+        dialogPane.getStyleClass().add("dialogue-pane");
+
+        ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType noButton = new ButtonType("Cancel", ButtonBar.ButtonData.NO);
+        alert.getButtonTypes().setAll(okButton, noButton);
+        alert.showAndWait().ifPresent(type -> {
+                System.out.println(type);
+                if (type.getButtonData() == ButtonBar.ButtonData.YES) {
+                    // Create new playlist
+                    createNewPlaylist();
+                } else {
+                    return;
+                } 
+        });
+    }
 
     @FXML
     private void toggleSong(ActionEvent event) {
@@ -327,19 +407,42 @@ public class MusicPlayerFXMLController implements Initializable {
     
     @FXML
     private void nextSong(ActionEvent event) {
-        System.out.println("NEXT SONG");
+        
+        if (player == null || playlistManager == null)
+            return;
+        
+        File f = playlistManager.getNextSong();
+        
+        if (f == null)
+            return;
+        
+        currentSong = f;
+        playSong(true);
+        updatePanel();
     }
 
     @FXML
     private void previousSong(ActionEvent event) {
-        if (songSlider.getValue() < 0.05) {
+        
+        if (player == null || playlistManager == null)
+            return;
+        
+        if (songSlider.getValue() > 0.05 || playlistManager == null) {
             
-            // Previous song in playlist
-            
-        } else {
             // Replay song
             player.seek(Duration.ZERO);
             player.play();
+            
+        } else {
+            // Previous song in playlist
+            File f = playlistManager.getPreviousSong();
+            
+            if (f == null)
+                return;
+            
+            currentSong = f;
+            playSong(true);
+            updatePanel();
         }
     }
 
@@ -351,7 +454,7 @@ public class MusicPlayerFXMLController implements Initializable {
             fileChooser.setInitialDirectory(currentSong.getParentFile());
         }
 
-        fileChooser.setTitle("Select Song");
+        fileChooser.setTitle("Open File");
 
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Audio File (*.mp3, *.wav)", "*.mp3", "*.wav")
@@ -392,7 +495,12 @@ public class MusicPlayerFXMLController implements Initializable {
 
     @FXML
     private void toggleShuffle(ActionEvent event) {
-        shuffle = shuffleToggle.isSelected();
+        if (shuffleToggle.isSelected())
+            playlistManager.createShuffledQueue(currentSong);
+        else
+            playlistManager.createSortedQueue(currentSong);
+        
+        playlistManager.printAll();
     }
 
     @FXML
@@ -479,8 +587,7 @@ public class MusicPlayerFXMLController implements Initializable {
     private void openAbout(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("About");
-        alert.setHeaderText("Tunez v1.2");
-        
+        alert.setHeaderText("Tunez v2.0");
         ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
 
         FlowPane pane = new FlowPane();
@@ -489,7 +596,7 @@ public class MusicPlayerFXMLController implements Initializable {
         Label label = new Label("Tunez is a minimalistic media player implemented in Java using JavaFX and FXML documents.\n\nMore information can be found here:");
         Hyperlink link = new Hyperlink("https://github.com/sharvenp/Tunez");
         link.setStyle("-fx-font-family: Consolas; -fx-font-size: 14;");
-        Label label2 = new Label("© 2020 Sharven P. Dhanasekar All Rights Reserved");
+        Label label2 = new Label("© sharvenp All Rights Reserved");
         vbox.getChildren().addAll(label, link, label2);
         pane.getChildren().add(vbox);
 
@@ -515,5 +622,93 @@ public class MusicPlayerFXMLController implements Initializable {
         dialogPane.getStyleClass().add("dialogue-pane");
         
         alert.showAndWait();
+    }
+
+    @FXML
+    private void selectPlaylist(ActionEvent event) {
+        
+        FileChooser fileChooser = new FileChooser();
+
+        if (playlistManager.getPlaylistFile() != null) {
+            fileChooser.setInitialDirectory(playlistManager.getPlaylistFile().getParentFile());
+        }
+
+        fileChooser.setTitle("Open Playlist");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Tunez Playlist (*.tunez)", "*.tunez")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            playlistManager = new PlaylistManager(selectedFile, playlistTable);
+        }
+    }
+    
+    @FXML
+    private void savePlaylist(ActionEvent event) {
+        
+        if (playlistManager == null) {
+            showNoPlaylistError();
+            return;
+        }
+        
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Save Playlist");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Tunez Playlist (*.tunez)", "*.tunez")
+        );
+
+        File selectedFile = fileChooser.showSaveDialog(stage);
+
+        if (selectedFile != null) {
+            playlistManager.save(selectedFile);
+        }
+    }
+
+    @FXML
+    private void createPlaylist(ActionEvent event) {
+        createNewPlaylist();
+    }
+
+    @FXML
+    private void addCurrentToPlaylist(ActionEvent event) {
+        
+        if (currentSong == null)
+            return;
+        
+        if (playlistManager == null) {
+           showNoPlaylistError();
+        } else {
+            playlistManager.addSong(currentSong);
+            playlistManager.printAll();
+        }
+    }
+
+    @FXML
+    private void addToPlaylist(ActionEvent event) {
+        
+        if (playlistManager == null) {
+            showNoPlaylistError();
+            return;
+        }
+        
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Add to Playlist");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Audio File (*.mp3, *.wav)", "*.mp3", "*.wav")
+        );
+
+        List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
+
+        if (selectedFiles != null) {
+            playlistManager.addSongs(selectedFiles);
+            playlistManager.printAll();
+        }
     }
 }
