@@ -489,7 +489,7 @@ public class MusicPlayerFXMLController implements Initializable {
         Label label = new Label("Tunez is a minimalistic media player implemented in Java using JavaFX and FXML documents.\n\nMore information can be found here:");
         Hyperlink link = new Hyperlink("https://github.com/sharvenp/Tunez");
         link.setStyle("-fx-font-family: Consolas; -fx-font-size: 14;");
-        Label label2 = new Label("© 2020 Sharven P. Dhanasekar All Rights Reserved");
+        Label label2 = new Label("© 2020 sharvenp All Rights Reserved");
         vbox.getChildren().addAll(label, link, label2);
         pane.getChildren().add(vbox);
 
