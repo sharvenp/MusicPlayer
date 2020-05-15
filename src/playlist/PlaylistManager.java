@@ -8,61 +8,67 @@ package playlist;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+
 import javafx.scene.control.TableView;
+import javafx.scene.media.Media;
+import util.ObservableObject;
+import util.Observer;
 
 /**
  *
  * @author sharv
  */
-public class PlaylistManager {
+public class PlaylistManager implements Observer {
 
     private File playlistFile;
-    private LinkedList<File> songlist;
-    private TableView<Object> tableView;
+    private ObservableList<Song> songlist;
+    private TableView<Song> tableView;
     
     private int currIndex;
     private Random r;
 
-    public PlaylistManager(File newFile, TableView<Object> tableView) {
+    public PlaylistManager(File newFile, TableView<Song> newTableView) {
         playlistFile = newFile;
-        this.tableView = tableView;
+        tableView = newTableView;
         
         if (playlistFile != null) {
             // Opened an existing playlist file
+            // Load it
         }
 
-        songlist = new LinkedList<>();
-
+        songlist = FXCollections.observableArrayList();
         r = new Random();
 
         currIndex = -1;
     }
 
-    private boolean checkSong(File newSong) {
-        for (File f : songlist) {
-            if (f.getName().equals(newSong.getName())) {
+    private boolean checkSong(Song newSong) {
+        for (Song s : songlist) {
+            if (s.getSongFile().getName().equals(newSong.getSongFile().getName())) {
                 return true;
             }
         }
         return false;
     }
 
-    public File getNextSong() {
-        if (songlist.size() == 0)
+    public Song getNextSong() {
+        if (songlist.isEmpty())
             return null;
 
         currIndex = (currIndex + 1) % songlist.size();
         return songlist.get(currIndex);
     }
     
-    public File getPreviousSong() {
+    public Song getPreviousSong() {
         
-        if (songlist.size() == 0)
+        if (songlist.isEmpty())
             return null;
-        
         
         currIndex--;
         
@@ -72,14 +78,30 @@ public class PlaylistManager {
         return songlist.get(currIndex);
     }
 
-    public void addSong(File newSong) {
+    public Song getCurrentSong() {
+        if (songlist.isEmpty() || currIndex == -1)
+            return null;
+        
+        return songlist.get(currIndex);
+    }
+    
+    public void setCurrentSong(Song s) {
+        currIndex = songlist.indexOf(s);
+        updateTable();
+    }
+    
+    public void addSong(Song newSong) {
 
         if (checkSong(newSong)) {
+            System.out.println("Song already in playlist");
             return;
         }
-
+        
         songlist.add(newSong);
 
+        newSong.addObserver(this);
+        newSong.processMetadata();
+        
         if (currIndex == -1) {
             currIndex = 0;
         }
@@ -87,46 +109,55 @@ public class PlaylistManager {
     
     public void addSongs(List<File> newSongs) {
 
-        for (File song : newSongs) {
+        for (File f : newSongs) {
             
-            if (checkSong(song)) {
-                return;
-            }
-
-            songlist.add(song);
-
+            Song s = new Song(f);
+            s.setSongMedia(new Media(f.toURI().toString()));
+            
+            addSong(s);
         }
-
-        if (currIndex == -1) {
-            currIndex = 0;
-        }
+        
     }
 
-    public void createShuffledQueue(File currentSong) {
-        
+    public void createShuffledQueue(Song currentSong) {
         songlist.remove(currentSong);
         Collections.shuffle(songlist);
-        songlist.addFirst(currentSong);
+        songlist.add(0, currentSong);
         currIndex = 0;
     }
      
-    public void createSortedQueue(File currentSong) {
-        songlist.sort(new Comparator<File>() {
+    public void createSortedQueue(Song currentSong) {
+        songlist.sort(new Comparator<Song>() {
             @Override
-            public int compare(File o1, File o2) {
-                return o1.getName().compareTo(o2.getName());
+            public int compare(Song s1, Song s2) {
+                return s1.getSongFile().getName().compareTo(s2.getSongFile().getName());
             }
         });
         currIndex = songlist.indexOf(currentSong);
     }
      
     public void printAll() {
-        tableView.getItems().clear();;
-        for (File f : songlist) {
-            System.out.println(f.getName());
-            tableView.getItems().add(f)
-          
+        for (Song s : songlist) {
+            System.out.println(s.getSongFile().getName());
         }
+    }
+    
+    
+    private void updateTable() {
+        tableView.getItems().clear();
+        for (Song s : songlist) {
+            tableView.getItems().add(s);
+        }
+        
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                tableView.requestFocus();
+                tableView.getSelectionModel().select(getCurrentSong());
+                tableView.getFocusModel().focus(currIndex);
+            }
+        });
     }
     
     public void save(File saveFile) {
@@ -137,4 +168,8 @@ public class PlaylistManager {
         return playlistFile;
     }
 
+    @Override
+    public void update(ObservableObject observable) {
+        updateTable();
+    }
 }

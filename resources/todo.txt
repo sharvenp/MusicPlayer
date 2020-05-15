@@ -3,15 +3,19 @@
 
 - Create manual to use the application
 - Playlist 
-    - create
-    - add song(s)
+    x create
+    x add song(s)
     - loading/saving
-    - metadata extraction for files
+    x metadata extraction for files
+    x play songs by clicking
+    - delete songs from playlist
+    - context menu for rows
     - searching and sorting by categories
+    - queue up songs    
 
 - Animations
 - Audio equalizer and effects
-	- Control bass/treble, etc.
+    - Control bass/treble, etc.
 
 - Document code 
 
@@ -19,28 +23,28 @@
 
 - Help tab
     - Manual
-    - About
-    - Styling
+    x About
+    x Styling
 
 - Light/Dark Theme selection
-    - Swap between css files to change theme
+    x Swap between css files to change theme
 
 - Enable/Disable visualizations
 - Audio visualization
 - Track seeking
 - Metadata extraction
-    - Album
-    - Artist
-    - Title
-    - Album Art
+    x Album
+    x Artist
+    x Title
+    x Album Art
 
 - Basic functionality
-    - Pause/Play
-    - Volume Control
+    x Pause/Play
+    x Volume Control
 
 - JavaFX base
 
 =============================================== Cancelled ============================================== :
 
 - Set pane background to prominent album art color
-    - JavaFX threading issues causes the application to hang
+    x JavaFX threading issues causes the application to hang

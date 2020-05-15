@@ -1,6 +1,9 @@
 package application;
 
 import playlist.PlaylistManager;
+import playlist.Song;
+import util.Observer;
+import util.ObservableObject;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -15,7 +18,6 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,8 +34,11 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -51,7 +56,7 @@ import javafx.util.Duration;
  *
  * @author sharv
  */
-public class MusicPlayerFXMLController implements Initializable {
+public class MusicPlayerFXMLController implements Initializable, Observer {
 
     @FXML
     private Label titleLabel;
@@ -82,19 +87,16 @@ public class MusicPlayerFXMLController implements Initializable {
     @FXML
     private TitledPane playlistTitlePane;
     @FXML
-    private TableView<Object> playlistTable;
+    private TableView<Song> playlistTable;
     
     private Scene scene;
     private Stage stage;
-    private File currentSong;
+    private Song currentSong;
     private MediaPlayer player;
-    private Media song;
+    private Media songMedia;
     private PlayerSpectrumListener spectrumListener;
     private PlaylistManager playlistManager;
-    private String title;
-    private String artist;
-    private String album;
-    private Image albumArtImage;
+
     private Image defaultImage;
 
     private Duration songDuration;
@@ -155,9 +157,21 @@ public class MusicPlayerFXMLController implements Initializable {
                     stage.setHeight(stage.getHeight() + (newVal.doubleValue() - oldVal.doubleValue()));
                 }
             }
-        });
+        });     
         
+        playlistTable.getColumns().clear();
         titleLabel.setFont(Font.loadFont(getClass().getClassLoader().getResourceAsStream("joystix_monospace.ttf"), 44));
+    }
+    
+    @Override
+    public void update(ObservableObject observable) {
+        
+        if (!currentSong.checkAll()) {
+            songNameLabel.setText(currentSong.getTitle());
+        } else {
+            songNameLabel.setText(String.format("[%s] %s - %s", currentSong.getAlbum(), currentSong.getArtist(), currentSong.getTitle()));
+            updateAlbumArtImage(currentSong.getAlbumArt());
+        }
     }
 
     public void setStage(Stage newStage) {
@@ -184,7 +198,7 @@ public class MusicPlayerFXMLController implements Initializable {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
         }
         
-        if (albumArtImage == null)
+        if (currentSong == null || currentSong.getAlbumArt() == null)
         {
             updateAlbumArtImage(defaultImage);
             stage.getIcons().clear();
@@ -207,38 +221,9 @@ public class MusicPlayerFXMLController implements Initializable {
             
         } else {
             
-            title = "";
-            artist = "";
-            album = "";
-            albumArtImage = null;
-            
             updateAlbumArtImage(defaultImage);
-            
-            String filteredName = currentSong.getName().replace(".mp3", "");
-            filteredName = filteredName.replace(".wav", "");
-            songNameLabel.setText(filteredName);
-            
-            song.getMetadata().addListener((MapChangeListener<String, Object>) c -> {
-                if (c.wasAdded() && c.getValueAdded() != null) {
-                    
-                    if ("raw metadata".equals(c.getKey()))
-                        return;
-                    
-                    if ("artist".equals(c.getKey())) {
-                        artist = c.getValueAdded().toString();
-                    } else if ("title".equals(c.getKey())) {
-                        title = c.getValueAdded().toString();
-                    } else if ("album".equals(c.getKey())) {
-                        album = c.getValueAdded().toString();
-                    } else if ("image".equals(c.getKey()) && c.getValueAdded() != null) {
-                        albumArtImage = (Image)c.getValueAdded();
-                        updateAlbumArtImage((Image)c.getValueAdded());
-                    }
-                    
-                    if (!artist.equals("") && !artist.equals("") && !artist.equals(""))
-                        songNameLabel.setText(String.format("[%s] %s - %s", album, artist, title));
-                }
-            });
+            currentSong.setSongMedia(songMedia);
+            currentSong.processMetadata();
         }
     }
 
@@ -251,7 +236,43 @@ public class MusicPlayerFXMLController implements Initializable {
         spectrumListener.setVolume(volumeSlider.getValue());
     }
     
+    private void initPlaylistTable() {
+        playlistTable.setPlaceholder(new Label("No music found in playlist"));
+        playlistTable.getColumns().clear();
+        TableColumn title = new TableColumn("Title");
+        TableColumn artist = new TableColumn("Artist");
+        TableColumn album = new TableColumn("Album");
+        TableColumn genre = new TableColumn("Genre");
+        TableColumn year = new TableColumn("Year");
+        
+        playlistTable.getColumns().addAll(title, artist, album, genre, year);
+        
+        title.setCellValueFactory (new PropertyValueFactory<Song, String>("title"));
+        artist.setCellValueFactory (new PropertyValueFactory<Song, String>("artist"));
+        album.setCellValueFactory (new PropertyValueFactory<Song, String>("album"));
+        genre.setCellValueFactory (new PropertyValueFactory<Song, String>("genre"));
+        year.setCellValueFactory (new PropertyValueFactory<Song, String>("year"));
+        
+        playlistTable.setRowFactory(tableView -> {
+            TableRow<Song> row = new TableRow();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    currentSong = row.getItem();
+                    currentSong.addObserver(this);
+                    
+                    if (playlistManager != null)
+                        playlistManager.setCurrentSong(currentSong);
+                    
+                    playSong(true);
+                    updatePanel();
+                }
+            });
+            return row;
+        });
+    }
+    
     private void createNewPlaylist() {
+        initPlaylistTable();
         playlistManager = new PlaylistManager(null, playlistTable);
         playlistTable.setDisable(false);
         playlistTitlePane.expandedProperty().setValue(true);
@@ -306,8 +327,8 @@ public class MusicPlayerFXMLController implements Initializable {
             player.stop();
         }
 
-        song = new Media(currentSong.toURI().toString());
-        player = new MediaPlayer(song);
+        songMedia = new Media(currentSong.getSongFile().toURI().toString());
+        player = new MediaPlayer(songMedia);
         
         player.currentTimeProperty().addListener(new InvalidationListener() 
         {
@@ -358,9 +379,7 @@ public class MusicPlayerFXMLController implements Initializable {
         ButtonType noButton = new ButtonType("Cancel", ButtonBar.ButtonData.NO);
         alert.getButtonTypes().setAll(okButton, noButton);
         alert.showAndWait().ifPresent(type -> {
-                System.out.println(type);
                 if (type.getButtonData() == ButtonBar.ButtonData.YES) {
-                    // Create new playlist
                     createNewPlaylist();
                 } else {
                     return;
@@ -411,12 +430,13 @@ public class MusicPlayerFXMLController implements Initializable {
         if (player == null || playlistManager == null)
             return;
         
-        File f = playlistManager.getNextSong();
+        Song s = playlistManager.getNextSong();
         
-        if (f == null)
+        if (s == null)
             return;
         
-        currentSong = f;
+        currentSong = s;
+        currentSong.addObserver(this);
         playSong(true);
         updatePanel();
     }
@@ -435,12 +455,13 @@ public class MusicPlayerFXMLController implements Initializable {
             
         } else {
             // Previous song in playlist
-            File f = playlistManager.getPreviousSong();
+            Song s = playlistManager.getPreviousSong();
             
-            if (f == null)
+            if (s == null)
                 return;
             
-            currentSong = f;
+            currentSong = s;
+            currentSong.addObserver(this);
             playSong(true);
             updatePanel();
         }
@@ -451,7 +472,7 @@ public class MusicPlayerFXMLController implements Initializable {
         FileChooser fileChooser = new FileChooser();
 
         if (currentSong != null) {
-            fileChooser.setInitialDirectory(currentSong.getParentFile());
+            fileChooser.setInitialDirectory(currentSong.getSongFile().getParentFile());
         }
 
         fileChooser.setTitle("Open File");
@@ -463,7 +484,8 @@ public class MusicPlayerFXMLController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            currentSong = selectedFile;
+            currentSong = new Song(selectedFile);
+            currentSong.addObserver(this);
             playSong(true);
             updatePanel();
         }
@@ -629,7 +651,7 @@ public class MusicPlayerFXMLController implements Initializable {
         
         FileChooser fileChooser = new FileChooser();
 
-        if (playlistManager.getPlaylistFile() != null) {
+        if (playlistManager != null && playlistManager.getPlaylistFile() != null) {
             fileChooser.setInitialDirectory(playlistManager.getPlaylistFile().getParentFile());
         }
 
@@ -651,8 +673,10 @@ public class MusicPlayerFXMLController implements Initializable {
         
         if (playlistManager == null) {
             showNoPlaylistError();
-            return;
         }
+
+        if (playlistManager == null)
+            return;
         
         FileChooser fileChooser = new FileChooser();
 
@@ -680,21 +704,24 @@ public class MusicPlayerFXMLController implements Initializable {
         if (currentSong == null)
             return;
         
-        if (playlistManager == null) {
+        if (playlistManager == null)
            showNoPlaylistError();
-        } else {
-            playlistManager.addSong(currentSong);
-            playlistManager.printAll();
-        }
+        
+        if (playlistManager == null)
+            return;
+        
+        playlistManager.addSong(currentSong);
+        System.out.println("Added " + currentSong.getTitle());
     }
 
     @FXML
     private void addToPlaylist(ActionEvent event) {
         
-        if (playlistManager == null) {
+        if (playlistManager == null)
             showNoPlaylistError();
+        
+        if (playlistManager == null)
             return;
-        }
         
         FileChooser fileChooser = new FileChooser();
 
@@ -708,7 +735,15 @@ public class MusicPlayerFXMLController implements Initializable {
 
         if (selectedFiles != null) {
             playlistManager.addSongs(selectedFiles);
-            playlistManager.printAll();
+            
+            if (currentSong == null) {
+                currentSong = playlistManager.getCurrentSong();
+                currentSong.addObserver(this);
+                playSong(true);
+                updatePanel();
+            }
+            
+            System.out.println("Added " + selectedFiles.size() + " songs.");
         }
     }
 }
