@@ -8,10 +8,11 @@
     - loading/saving
     x metadata extraction for files
     x play songs by clicking
-    - delete songs from playlist
-    - context menu for rows
+    x delete songs from playlist
+    x context menu for rows
     - searching and sorting by categories
     - queue up songs    
+    - styling
 
 - Animations
 - Audio equalizer and effects

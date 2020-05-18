@@ -90,6 +90,15 @@ public class PlaylistManager implements Observer {
         updateTable();
     }
     
+    public void deleteSong(Song s, boolean deletedCurrentSong) {
+        songlist.remove(s);
+        
+        if (deletedCurrentSong)
+            currIndex = -1;
+        
+        updateTable();
+    }
+    
     public void addSong(Song newSong) {
 
         if (checkSong(newSong)) {
@@ -149,15 +158,18 @@ public class PlaylistManager implements Observer {
             tableView.getItems().add(s);
         }
         
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                tableView.requestFocus();
-                tableView.getSelectionModel().select(getCurrentSong());
-                tableView.getFocusModel().focus(currIndex);
-            }
-        });
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run()
+//            {
+//                for (int i = 0; i < tableView.getItems().size(); i++) {
+//                    if (i == currIndex)
+//                        tableView.g.setStyle("-fx-background-color: rgb(255, 80, 80)");
+//                    else    
+//                        row.setStyle("");
+//                }
+//            }
+//        });
     }
     
     public void save(File saveFile) {

@@ -21,6 +21,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -30,10 +31,13 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -41,15 +45,23 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import playlist.RowContextMenu;
 
 /**
  * FXML Controller class
@@ -88,6 +100,7 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
     private TitledPane playlistTitlePane;
     @FXML
     private TableView<Song> playlistTable;
+    
     
     private Scene scene;
     private Stage stage;
@@ -237,26 +250,32 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
     }
     
     private void initPlaylistTable() {
-        playlistTable.setPlaceholder(new Label("No music found in playlist"));
         playlistTable.getColumns().clear();
-        TableColumn title = new TableColumn("Title");
-        TableColumn artist = new TableColumn("Artist");
-        TableColumn album = new TableColumn("Album");
-        TableColumn genre = new TableColumn("Genre");
-        TableColumn year = new TableColumn("Year");
+        playlistTable.setPlaceholder(new Label("No music found in playlist"));
+        TableColumn<Song, String> title = new TableColumn("Title");
+        TableColumn<Song, String> artist = new TableColumn("Artist");
+        TableColumn<Song, String> album = new TableColumn("Album");
+        TableColumn<Song, String> genre = new TableColumn("Genre");
+        TableColumn<Song, String> year = new TableColumn("Year");
+        
+        title.setCellValueFactory (new PropertyValueFactory<>("title"));
+        artist.setCellValueFactory (new PropertyValueFactory<>("artist"));
+        album.setCellValueFactory (new PropertyValueFactory<>("album"));
+        genre.setCellValueFactory (new PropertyValueFactory<>("genre"));
+        year.setCellValueFactory (new PropertyValueFactory<>("year"));
         
         playlistTable.getColumns().addAll(title, artist, album, genre, year);
         
-        title.setCellValueFactory (new PropertyValueFactory<Song, String>("title"));
-        artist.setCellValueFactory (new PropertyValueFactory<Song, String>("artist"));
-        album.setCellValueFactory (new PropertyValueFactory<Song, String>("album"));
-        genre.setCellValueFactory (new PropertyValueFactory<Song, String>("genre"));
-        year.setCellValueFactory (new PropertyValueFactory<Song, String>("year"));
+
+        for (int i = 0; i < playlistTable.getColumns().size(); i++) {
+            customizeFactory((TableColumn<Song, String>) playlistTable.getColumns().get(i));
+        }
         
         playlistTable.setRowFactory(tableView -> {
             TableRow<Song> row = new TableRow();
+            
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && !row.isEmpty()) {
                     currentSong = row.getItem();
                     currentSong.addObserver(this);
                     
@@ -265,11 +284,50 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
                     
                     playSong(true);
                     updatePanel();
+                } else if (event.getButton() == MouseButton.SECONDARY) {
+                    RowContextMenu rcm = new RowContextMenu(this, row.getItem());
+                    rcm.show(row, event.getScreenX(), event.getScreenY());
                 }
             });
+            
             return row;
         });
+        
+        playlistTable.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.DELETE) && !playlistTable.getSelectionModel().isEmpty()) {
+                int i = playlistTable.getSelectionModel().getSelectedIndex();
+                deleteSong(playlistTable.getSelectionModel().getSelectedItem());
+                playlistTable.getSelectionModel().select(i);
+            } else if (event.getCode().equals(KeyCode.Q) && !playlistTable.getSelectionModel().isEmpty()) {
+                queueSong(playlistTable.getSelectionModel().getSelectedItem());
+            }
+        });
     }
+
+    private void customizeFactory(TableColumn<Song, String> column) {
+        column.setCellFactory(col -> {
+            return new TableCell<Song, String>() {
+               @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setGraphic(null);
+                        setStyle("");
+                    } else {
+                        setText(item);
+                        Song song = getTableView().getItems().get(getIndex());
+                        if (song == currentSong) {
+                            setStyle("-fx-background-color: rgb(255, 120, 120)");
+                        } else {
+                            setStyle("");
+                        }
+                    }
+                }
+            };
+        });       
+    }
+    
     
     private void createNewPlaylist() {
         initPlaylistTable();
@@ -339,6 +397,9 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
         
         player.setOnReady(new Runnable() {
             public void run() {
+                if (player == null)
+                    return;
+                
                 songDuration = player.getMedia().getDuration();
                 updatePlayer();
             }
@@ -355,6 +416,24 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
         
         player.play();
         playButton.setText("⏸");
+    }
+    
+    public void deleteSong(Song deletedSong) {
+        boolean flag = false;
+        if (deletedSong == currentSong) {
+            flag = true;
+            player.stop();
+            currentSong = null;
+            player = null;
+            isPlaying = false;
+            updatePanel();
+        } 
+        playlistManager.deleteSong(deletedSong, flag);
+        spectrumListener.clearCanvas();
+    } 
+    
+    public void queueSong(Song queuedSong) {
+        System.out.println("Queue song: " + queuedSong.getTitle());
     }
     
     private void showNoPlaylistError() {
