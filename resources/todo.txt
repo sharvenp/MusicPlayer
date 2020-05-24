@@ -5,20 +5,22 @@
 - Playlist 
     x create
     x add song(s)
-    - loading/saving
+    x loading/saving
     x metadata extraction for files
     x play songs by clicking
     x delete songs from playlist
     x context menu for rows
-    - searching and sorting by categories
-    - queue up songs    
+    x searching and sorting by categories
+    x queue up songs    
     - styling
+    - drag music up and down in queue
 
 - Animations
 - Audio equalizer and effects
     - Control bass/treble, etc.
 
 - Document code 
+- Save user settings
 
 =============================================== Completed ============================================== :
 
