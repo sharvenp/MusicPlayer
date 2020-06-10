@@ -2,6 +2,16 @@
 ================================================= To Do ================================================ : 
 
 - Create manual to use the application
+
+- Animations
+- Audio equalizer and effects
+    - Control bass/treble, etc.
+
+- Document code 
+- Save user settings
+
+=============================================== Completed ============================================== :
+
 - Playlist 
     x create
     x add song(s)
@@ -14,16 +24,6 @@
     x queue up songs    
     x remove from queue
     x styling
-    
-
-- Animations
-- Audio equalizer and effects
-    - Control bass/treble, etc.
-
-- Document code 
-- Save user settings
-
-=============================================== Completed ============================================== :
 
 - Help tab
     - Manual
