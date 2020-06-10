@@ -10,7 +10,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,6 +27,10 @@ public class MusicPlayer extends Application {
         Parent root = (Parent) loader.load();
 
         MusicPlayerFXMLController controller = (MusicPlayerFXMLController) loader.getController();
+        
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        
         controller.setStage(stage);
 
         Scene scene = new Scene(root);
@@ -39,8 +42,6 @@ public class MusicPlayer extends Application {
         stage.setTitle("Tunez");
         stage.setScene(scene);
         stage.setResizable(false);
-        
-        stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("defaultArt.png")));
         stage.show();
     }
 

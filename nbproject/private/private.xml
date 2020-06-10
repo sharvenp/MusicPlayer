@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>src/application/MusicPlayer.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>12</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/resources/todo.txt</file>
+            <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/playlist/PlaylistManager.java</file>
             <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/application/MusicPlayer.java</file>
             <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/application/MusicPlayerFXMLController.java</file>
-            <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/application/ApplicationLauncher.java</file>
-            <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/application/PlayerSpectrumListener.java</file>
+            <file>file:/D:/Sharven/Programming/NetBeans%2011.3%20Projects/Tunez/src/playlist/RowContextMenu.java</file>
         </group>
     </open-files>
 </project-private>
