@@ -2,9 +2,13 @@
 
 ## About ##
 
-<img align="center" width="100%" height="100%" src="readme_resources/exampleLightv1.3.PNG">
+<img align="center" width="100%" height="100%" src="readme_resources/exampleLight-1-v2.1.PNG">
 
-<img align="center" width="100%" height="100%" src="readme_resources/exampleDarkv1.3.PNG">
+<img align="center" width="100%" height="100%" src="readme_resources/exampleLight-2-v2.1.PNG">
+
+<img align="center" width="100%" height="100%" src="readme_resources/exampleDark-1-v2.1.PNG">
+
+<img align="center" width="100%" height="100%" src="readme_resources/exampleDark-2-v2.1.PNG">
 
 Tunez is a simple Music Media Player. It can play `.mp3` and `.wav` files and supports all media commands such as play, pause, skip, track seeking, etc.
 
@@ -16,9 +20,9 @@ The application is coded in Java using JavaFX and FXML files. I am currently try
 
 Hence when the executable is available, the only dependency is that the latest version of [Java](https://java.com/en/download/help/download_options.xml) needs to be installed on your computer.
 
-## Versions ##
+## Download ##
 
-[Version 1.x](https://github.com/sharvenp/Tunez/tree/v1)
+*Creating downloadable file. Clone repository to use.*
 
 ## License ## 
 
