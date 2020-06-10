@@ -67,10 +67,10 @@ public class PlaylistManager implements Observer {
     }
 
     public Song getNextSong() {
-        if (songlist.isEmpty())
+        if (songQueue.isEmpty())
             return null;
 
-        currIndex = (currIndex + 1) % songlist.size();
+        currIndex = (currIndex + 1) % songQueue.size();
         return songQueue.get(currIndex);
     }
     
@@ -115,12 +115,22 @@ public class PlaylistManager implements Observer {
     }
     
     public void queueSong(Song s) {
-        songQueue.remove(s);
+//        songQueue.remove(s);
+        
         if (currIndex < songQueue.size() - 1) {
             songQueue.add(currIndex + 1, s);
         } else {
             songQueue.add(s);
         }
+        
+        updateQueue();
+    }
+    
+    public void removeSongFromQueue(Song s) {
+        songQueue.remove(s);
+        
+        if (songQueue.isEmpty())
+            currIndex = 0;
         
         updateQueue();
     }

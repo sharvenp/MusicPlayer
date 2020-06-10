@@ -483,16 +483,7 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
     }
     
     public void deleteSong(Song deletedSong) {
-        boolean flag = false;
-        if (deletedSong == currentSong) {
-            flag = true;
-            player.stop();
-            currentSong = null;
-            player = null;
-            isPlaying = false;
-            updatePanel();
-        } 
-        playlistManager.deleteSong(deletedSong, flag);
+        playlistManager.deleteSong(deletedSong, deletedSong == currentSong);
         spectrumListener.clearCanvas();
     } 
     
@@ -502,34 +493,42 @@ public class MusicPlayerFXMLController implements Initializable, Observer {
             playlistManager.queueSong(queuedSong);
     }
     
+    public void removeSongFromQueue(Song queuedSong) {
+        
+        if (playlistManager != null)
+            playlistManager.removeSongFromQueue(queuedSong);
+    }
+    
     private void showNoPlaylistError() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Add to Playlist");
-        alert.setHeaderText("No existing playlist.");
-        alert.setContentText("You have not created a playlist. Do you wish to create one?");
-        ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().clear();
-
-        if (darkTheme.isSelected()) {
-            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
-        } else {
-            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
-        }
-
-        dialogPane.getStyleClass().add("dialogue-pane");
-
-        ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-        ButtonType noButton = new ButtonType("Cancel", ButtonBar.ButtonData.NO);
-        alert.getButtonTypes().setAll(okButton, noButton);
-        alert.showAndWait().ifPresent(type -> {
-                if (type.getButtonData() == ButtonBar.ButtonData.YES) {
-                    createNewPlaylist(null);
-                } else {
-                    return;
-                } 
-        });
+//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//        alert.setTitle("Add to Playlist");
+//        alert.setHeaderText("No existing playlist.");
+//        alert.setContentText("You have not created a playlist. Do you wish to create one?");
+//        ((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultImage);
+//
+//        DialogPane dialogPane = alert.getDialogPane();
+//        dialogPane.getStylesheets().clear();
+//
+//        if (darkTheme.isSelected()) {
+//            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("dark_theme.css").toString());
+//        } else {
+//            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("light_theme.css").toString());
+//        }
+//
+//        dialogPane.getStyleClass().add("dialogue-pane");
+//
+//        ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//        ButtonType noButton = new ButtonType("Cancel", ButtonBar.ButtonData.NO);
+//        alert.getButtonTypes().setAll(okButton, noButton);
+//        alert.showAndWait().ifPresent(type -> {
+//                if (type.getButtonData() == ButtonBar.ButtonData.YES) {
+//                    createNewPlaylist(null);
+//                } else {
+//                    return;
+//                } 
+//        });
+//        
+        createNewPlaylist(null);
     }
 
     @FXML

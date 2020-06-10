@@ -12,8 +12,9 @@
     x context menu for rows
     x searching and sorting by categories
     x queue up songs    
-    - styling
-    - drag music up and down in queue
+    x remove from queue
+    x styling
+    
 
 - Animations
 - Audio equalizer and effects
@@ -51,3 +52,6 @@
 
 - Set pane background to prominent album art color
     x JavaFX threading issues causes the application to hang
+
+- Playlist
+    - drag music up and down in queue

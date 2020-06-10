@@ -52,9 +52,121 @@
 	-fx-text-fill: rgb(255, 255, 255);
 }
 
+#PlaylistTable {
+    -fx-background-color: rgb(50, 50, 50);
+    -fx-background-radius: 6 6 6 6;
+}
+
+#PlaylistTable .colum-header-background {
+    -fx-background-color: rgb(50, 50, 50);
+    -fx-background-radius: 6 6 6 6;
+}
+
+.accordion .titled-pane > *.content {
+    -fx-background-color: rgb(70, 70, 70);
+    -fx-background-radius: 6 6 6 6;
+}
+
+.accordion .titled-pane .title:disabled {
+    -fx-background-color: rgb(200, 200, 200);
+}
+
+.accordion .titled-pane > .title {
+    -fx-background-color: rgb(200, 200, 200);
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-background-radius: 6 6 6 6;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width:90px;
+}
+
+.tab{
+    -fx-background-insets: 0 1 0 1,0,0;
+    -fx-border-width: 3px;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: rgb(50, 50, 50);
+    -fx-border-width: 2px;
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: rgb(40, 40, 40);
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: rgb(255, 78, 78);
+}
+
+.table-view {
+   -fx-background-color: transparent;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-font-family: 'consolas';
+}
+
+.table-view:focused{
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: rgb(70, 70, 70);
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: white;
+    -fx-table-cell-border-color: rgb(100, 100, 100);
+}
+
+.table-row-cell{
+    -fx-background-color: -fx-table-cell-border-color, rgb(50, 50, 50);
+    -fx-border-color: rgb(100, 100, 100);
+}
+
+.table-row-cell:selected {
+    -fx-background-color: rgb(120, 120, 120);
+}
+
+.table-view .scroll-bar * {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+}
+
 .menu-item .label {
-	-fx-font-family: 'Consolas';
-	-fx-font-size: 14;
+    -fx-font-family: 'Consolas';
+    -fx-font-size: 14;
     -fx-text-fill: rgb(255, 255, 255);
 }
 
@@ -99,3 +211,4 @@
 	-fx-font-family: Consolas;
     -fx-font-size: 22;
 }
+

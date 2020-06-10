@@ -15,20 +15,14 @@ import javafx.scene.control.MenuItem;
  */
 public class RowContextMenu extends ContextMenu {
  
-    private MenuItem deleteItem;
-    private MenuItem queueItem;
-    
-    private MusicPlayerFXMLController controller;
-    private Song selectedSong;
-    
     public RowContextMenu(MusicPlayerFXMLController newController, Song newSelectedSong) {
         
-        controller = newController;
-        selectedSong = newSelectedSong;
+        MusicPlayerFXMLController controller = newController;
+        Song selectedSong = newSelectedSong;
         
-        deleteItem = new MenuItem("Delete");
-        queueItem = new MenuItem("Queue Next");
-    
+        MenuItem deleteItem = new MenuItem("Delete");
+        MenuItem queueItem = new MenuItem("Queue Next");
+        MenuItem removeItem = new MenuItem("Remove from Queue");
         
         deleteItem.setOnAction(event -> {
             controller.deleteSong(selectedSong);
@@ -38,6 +32,10 @@ public class RowContextMenu extends ContextMenu {
             controller.queueSong(selectedSong);
         });
         
-        getItems().addAll(queueItem, deleteItem);
+        removeItem.setOnAction(event -> {
+            controller.removeSongFromQueue(selectedSong);
+        });
+        
+        getItems().addAll(queueItem, deleteItem, removeItem);
     }
 }
